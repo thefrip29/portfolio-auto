@@ -1,29 +1,40 @@
 import { useEffect, useState } from 'react'
 import ColorThief from 'colorthief'
+import { RowsPhotoAlbum } from 'react-photo-album'
+import 'react-photo-album/rows.css'
 import PageHeader from '../components/PageHeader.jsx'
 import Lightbox from '../components/Lightbox.jsx'
+import { useLang } from '../i18n.jsx'
 
 /* ──────────────────────────────────────────────────────────────
    IMPORT AUTOMATIQUE DES PHOTOS
-   Dépose simplement tes fichiers dans  src/assets/photos/
-   (jpg, jpeg, png ou webp) : ils sont détectés par Vite au build,
-   aucun code à modifier.
+   Dépose tes fichiers dans  src/assets/photos/  (jpg, jpeg, png, webp).
+   NOMMAGE attendu :  <shoot>-<numero>.jpg  ou  <numero>.jpg
+   Le premier chiffre = le numéro de shooting (sert au tri).
    ────────────────────────────────────────────────────────────── */
 const photoModules = import.meta.glob(
   '../assets/photos/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}',
   { eager: true, import: 'default' },
 )
-const PHOTO_URLS = Object.values(photoModules)
 
-/* ── Utilitaires couleur ──────────────────────────────────────── */
+/** Numéro de shoot = chiffres au début du nom de fichier. */
+function shootNumber(name) {
+  const m = name.match(/^(\d+)/)
+  return m ? parseInt(m[1], 10) : Infinity
+}
 
-/** Convertit un RGB [0-255] en HSL { h: 0-360, s: 0-1, l: 0-1 } */
+const PHOTOS = Object.entries(photoModules).map(([path, url]) => {
+  const name = path.split('/').pop()
+  return { src: url, name, shoot: shootNumber(name) }
+})
+
+/* ── Couleur dominante (déco lightbox + tri interne) ───────────── */
 function rgbToHsl([r, g, b]) {
   r /= 255; g /= 255; b /= 255
   const max = Math.max(r, g, b)
   const min = Math.min(r, g, b)
   const l = (max + min) / 2
-  if (max === min) return { h: 0, s: 0, l } // gris pur
+  if (max === min) return { h: 0, s: 0, l }
   const d = max - min
   const s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
   let h
@@ -33,151 +44,132 @@ function rgbToHsl([r, g, b]) {
   return { h: h * 60, s, l }
 }
 
-/**
- * Extrait la couleur dominante d'une image, 100 % côté navigateur
- * (ColorThief lit les pixels via un canvas — aucun appel réseau).
- */
-function extractColor(src) {
+function loadMeta(src) {
   return new Promise((resolve) => {
     const img = new Image()
     img.src = src
-    const fallback = [20, 20, 23] // gris graphite si l'analyse échoue
+    const fallback = { color: [20, 20, 23], width: 4, height: 3 }
     img.onload = () => {
-      try {
-        resolve(new ColorThief().getColor(img))
-      } catch {
-        resolve(fallback)
-      }
+      let color = [20, 20, 23]
+      try { color = new ColorThief().getColor(img, 25) } catch { /* garde le gris */ }
+      resolve({ color, width: img.naturalWidth || 4, height: img.naturalHeight || 3 })
     }
     img.onerror = () => resolve(fallback)
   })
 }
 
-/**
- * Tri par teinte (hue) pour créer un dégradé visuel harmonieux.
- * Les photos quasi monochromes (faible saturation) sont regroupées
- * en fin de galerie, triées par luminosité.
- */
-function sortByHue(photos) {
-  const SAT_MIN = 0.12
-  const colored = photos.filter((p) => p.hsl.s >= SAT_MIN)
-  const grays = photos.filter((p) => p.hsl.s < SAT_MIN)
-  colored.sort((a, b) => a.hsl.h - b.hsl.h || a.hsl.l - b.hsl.l)
-  grays.sort((a, b) => b.hsl.l - a.hsl.l)
-  return [...colored, ...grays]
+/* TRI : par shoot (du plus grand au plus petit),
+   puis dégradé de teinte à shoot égal. */
+function arrange(photos) {
+  return [...photos].sort((a, b) => {
+    if (a.shoot !== b.shoot) return b.shoot - a.shoot
+    const aGray = a.hsl.s < 0.12
+    const bGray = b.hsl.s < 0.12
+    if (aGray !== bGray) return aGray ? 1 : -1
+    return a.hsl.h - b.hsl.h || a.hsl.l - b.hsl.l
+  })
 }
 
-/* ── Vignette avec lazy loading + fondu d'apparition ──────────── */
-function PhotoCard({ photo, onClick }) {
-  const [loaded, setLoaded] = useState(false)
-
+function Skeleton({ label }) {
+  const widths = ['w-72', 'w-56', 'w-80', 'w-64', 'w-72', 'w-56', 'w-80']
   return (
-    <button
-      onClick={onClick}
-      className="group relative mb-4 block w-full break-inside-avoid overflow-hidden border border-line bg-graphite
-                 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber"
-      aria-label="Agrandir la photo"
-    >
-      <img
-        src={photo.src}
-        alt=""
-        loading="lazy" /* chargement progressif au scroll */
-        onLoad={() => setLoaded(true)}
-        className={`w-full transition-all duration-700
-          ${loaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md'}
-          group-hover:scale-[1.03]`}
-      />
-      {/* Liseré de la couleur dominante au survol */}
-      <span
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
-        style={{ backgroundColor: `rgb(${photo.color.join(',')})` }}
-      />
-    </button>
-  )
-}
-
-/* ── Squelette affiché pendant l'analyse des couleurs ─────────── */
-function Skeleton() {
-  const heights = ['h-64', 'h-80', 'h-52', 'h-72', 'h-60', 'h-80', 'h-56', 'h-72', 'h-64']
-  return (
-    <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
-      {heights.map((h, i) => (
-        <div
-          key={i}
-          className={`${h} mb-4 break-inside-avoid animate-pulseSoft border border-line bg-graphite`}
-        />
-      ))}
+    <div className="space-y-6">
+      <p className="font-mono text-sm tracking-widest text-smoke">{label}</p>
+      <div className="flex flex-wrap gap-2">
+        {widths.map((w, i) => (
+          <div key={i} className={`h-56 ${w} animate-pulseSoft border border-line bg-graphite`} />
+        ))}
+      </div>
     </div>
   )
 }
 
-/* ── Page Portfolio ───────────────────────────────────────────── */
+function rowHeight(containerWidth) {
+  if (containerWidth < 640) return 220
+  if (containerWidth < 1024) return 300
+  return 360
+}
+function rowConstraints(containerWidth) {
+  if (containerWidth < 640) return { maxPhotos: 2 }
+  return { maxPhotos: 3 }
+}
+
 export default function Portfolio() {
-  const [photos, setPhotos] = useState([])     // [{ src, color, hsl }]
-  const [analyzing, setAnalyzing] = useState(PHOTO_URLS.length > 0)
-  const [selected, setSelected] = useState(null) // photo ouverte en lightbox
+  const { t, lang } = useLang()
+  const [photos, setPhotos] = useState([])
+  const [loading, setLoading] = useState(PHOTOS.length > 0)
+  const [selected, setSelected] = useState(null)
 
+  /* CHARGEMENT PROGRESSIF :
+     chaque photo s'ajoute dès qu'elle est prête (au lieu d'attendre
+     que TOUTES soient chargées). La galerie apparaît donc tout de suite,
+     et l'ordre par shoot est respecté en continu (le numéro est connu
+     d'avance via le nom de fichier). */
   useEffect(() => {
-    if (PHOTO_URLS.length === 0) return
+    if (PHOTOS.length === 0) return
     let cancelled = false
+    const collected = []
+    let done = 0
 
-    // Analyse de toutes les photos en parallèle, puis tri par teinte
-    Promise.all(
-      PHOTO_URLS.map(async (src) => {
-        const color = await extractColor(src)
-        return { src, color, hsl: rgbToHsl(color) }
-      }),
-    ).then((result) => {
-      if (cancelled) return
-      setPhotos(sortByHue(result))
-      setAnalyzing(false)
+    PHOTOS.forEach((p) => {
+      loadMeta(p.src).then((meta) => {
+        if (cancelled) return
+        collected.push({ ...p, ...meta, hsl: rgbToHsl(meta.color) })
+        done += 1
+        setPhotos(arrange(collected.slice()))
+        if (loading) setLoading(false) // dès la 1re photo, on retire le skeleton
+        if (done === PHOTOS.length) setLoading(false)
+      })
     })
 
     return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const loadingLabel = lang === 'en'
+    ? 'Loading the gallery…'
+    : 'Chargement de la galerie…'
 
   return (
     <section className="pb-28">
       <div className="mx-auto max-w-6xl px-5">
         <PageHeader
-          eyebrow="04 / Mon portfolio"
-          title={<>La galerie, triée par <span className="text-amber">couleur</span></>}
-          intro="Les images sont analysées dans votre navigateur et ordonnées par teinte dominante pour former un dégradé continu."
+          eyebrow={t.portfolio.eyebrow}
+          title={<>{t.portfolio.title.a}<span className="text-amber">{t.portfolio.title.b}</span></>}
+          intro={t.portfolio.intro}
         />
 
-        {/* 3 états : dossier vide / analyse en cours / galerie prête */}
         <div className="mt-12">
-          {PHOTO_URLS.length === 0 ? (
+          {PHOTOS.length === 0 ? (
             <div className="border border-dashed border-line p-16 text-center">
               <p className="font-mono text-sm tracking-widest uppercase text-smoke">
-                Aucune photo pour l'instant
+                {t.portfolio.emptyTitle}
               </p>
               <p className="mt-3 text-smoke">
-                Ajoute tes images dans <code className="text-amber">src/assets/photos/</code> —
-                elles apparaîtront ici automatiquement.
+                {t.portfolio.emptyTextA}<code className="text-amber">src/assets/photos/</code>{t.portfolio.emptyTextB}
               </p>
             </div>
-          ) : analyzing ? (
-            <Skeleton />
+          ) : loading ? (
+            <Skeleton label={loadingLabel} />
           ) : (
-            /* Disposition masonry via colonnes CSS : s'adapte à tout format */
-            <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
-              {photos.map((photo) => (
-                <PhotoCard key={photo.src} photo={photo} onClick={() => setSelected(photo)} />
-              ))}
-            </div>
+            <RowsPhotoAlbum
+              photos={photos}
+              targetRowHeight={rowHeight}
+              rowConstraints={rowConstraints}
+              spacing={8}
+              render={{
+                image: (props) => (
+                  <img {...props} loading="lazy" decoding="async" alt={props.alt || ''} />
+                ),
+              }}
+              onClick={({ index }) => setSelected(photos[index])}
+            />
           )}
         </div>
       </div>
 
-      {/* Lightbox plein écran, teintée par la couleur dominante */}
       {selected && (
-        <Lightbox
-          photo={selected}
-          photos={photos}
-          onSelect={setSelected}
-          onClose={() => setSelected(null)}
-        />
+        <Lightbox photo={selected} photos={photos} onSelect={setSelected} onClose={() => setSelected(null)} />
       )}
     </section>
   )

@@ -1,95 +1,84 @@
 import PageHeader from '../components/PageHeader.jsx'
 import useReveal from '../hooks/useReveal.js'
+import { useLang } from '../i18n.jsx'
 
-/**
- * ▼ Remplace les entrées ci-dessous par ton vrai matériel :
- *   - image : mets tes visuels dans src/assets/ puis importe-les,
- *     ou laisse null pour afficher le placeholder.
- *   - link  : ton lien Amazon (idéalement un lien affilié).
- */
-const GEAR = [
-  {
-    name: 'Boîtier — [Modèle]',
-    desc: 'Plein format, rafale rapide, idéal pour le sport automobile.',
-    image: null,
-    link: 'https://www.amazon.fr/',
-  },
-  {
-    name: 'Objectif 70-200 mm f/2.8',
-    desc: 'Le téléobjectif de référence pour les filés en bord de piste.',
-    image: null,
-    link: 'https://www.amazon.fr/',
-  },
-  {
-    name: 'Objectif 24-70 mm f/2.8',
-    desc: 'Polyvalent : statiques, détails, ambiance concession.',
-    image: null,
-    link: 'https://www.amazon.fr/',
-  },
-  {
-    name: 'Filtre polarisant',
-    desc: 'Supprime les reflets sur les carrosseries et les vitres.',
-    image: null,
-    link: 'https://www.amazon.fr/',
-  },
-  {
-    name: 'Trépied — [Modèle]',
-    desc: 'Poses longues de nuit et compositions millimétrées.',
-    image: null,
-    link: 'https://www.amazon.fr/',
-  },
+/* ──────────────────────────────────────────────────────────────
+   IMPORT AUTOMATIQUE DES PHOTOS PRODUIT
+   Dépose les visuels dans  src/assets/materiel/  (jpg, jpeg, png, webp).
+   Relie une photo à une carte via le champ "img" (nom de fichier sans extension).
+   ────────────────────────────────────────────────────────────── */
+const gearImages = import.meta.glob(
+  '../assets/materiel/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}',
+  { eager: true, import: 'default' },
+)
+
+function imageFor(key) {
+  if (!key) return null
+  const found = Object.entries(gearImages).find(
+    ([path]) => path.split('/').pop().split('.')[0] === key,
+  )
+  return found ? found[1] : null
+}
+
+/* Prix et image sont fixes ; nom et description viennent des traductions. */
+const META = [
+  {img: 'boitier' },
+  {img: '100-400' },
+  {img: '18-50' },
+  {img: '3in1' },
+  {img: 'ronin' },
 ]
 
 export default function Materiel() {
+  const { t } = useLang()
   const grid = useReveal()
 
   return (
     <section className="pb-28">
       <div className="mx-auto max-w-6xl px-5">
         <PageHeader
-          eyebrow="03 / Mon matériel"
-          title={<>Dans le <span className="text-amber">sac</span></>}
-          intro="Du matériel de pointe, choisi pour chaque situation : concession, circuit, nuit."
+          eyebrow={t.materiel.eyebrow}
+          title={<>{t.materiel.title.a}<span className="text-amber">{t.materiel.title.b}</span></>}
+          intro={t.materiel.intro}
         />
 
         <div ref={grid} className="reveal mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {GEAR.map((item) => (
-            <article
-              key={item.name}
-              className="group flex flex-col border border-line bg-graphite transition-all duration-300 hover:-translate-y-1 hover:border-amber/50"
-            >
-              {/* Image du produit (ou placeholder) */}
-              <div className="aspect-[4/3] overflow-hidden bg-carbon">
-                {item.image ? (
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <span className="font-mono text-xs tracking-widest uppercase text-smoke">
-                      Image produit
+          {t.materiel.gear.map((item, i) => {
+            const image = imageFor(META[i].img)
+            return (
+              <article
+                key={META[i].img}
+                className="group flex flex-col border border-line bg-graphite transition-all duration-300 hover:-translate-y-1 hover:border-amber/50"
+              >
+                <div className="aspect-[4/3] overflow-hidden bg-carbon">
+                  {image ? (
+                    <img
+                      src={image}
+                      alt={item.name}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <span className="font-mono text-xs tracking-widest uppercase text-smoke">
+                        {t.materiel.placeholder}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="font-display font-bold text-lg">{item.name}</h3>
+                    <span className="shrink-0 font-mono text-sm font-bold text-amber">
+                      {META[i].price}
                     </span>
                   </div>
-                )}
-              </div>
-
-              <div className="flex flex-1 flex-col p-6">
-                <h3 className="font-display font-bold text-lg">{item.name}</h3>
-                <p className="mt-2 flex-1 text-sm text-smoke">{item.desc}</p>
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-ghost mt-5 self-start text-xs"
-                >
-                  Voir sur Amazon →
-                </a>
-              </div>
-            </article>
-          ))}
+                  <p className="mt-2 flex-1 text-sm text-smoke">{item.desc}</p>
+                </div>
+              </article>
+            )
+          })}
         </div>
       </div>
     </section>

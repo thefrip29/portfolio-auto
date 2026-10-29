@@ -1,86 +1,120 @@
 import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader.jsx'
 import useReveal from '../hooks/useReveal.js'
+import { useLang } from '../i18n.jsx'
 
-// Les 3 points clés de l'offre
-const POINTS = [
-  {
-    tag: 'Livraison',
-    title: 'Photos retouchées sous 72 h',
-    text: 'Des fichiers prêts à publier, livrés rapidement après la séance.',
-  },
-  {
-    tag: 'Inclus',
-    title: 'Planning éditorial offert',
-    text: 'Vous savez exactement quoi publier, quand, et avec quelle accroche.',
-  },
-  {
-    tag: 'Contrepartie',
-    title: 'Visibilité croisée',
-    text: 'Vos véhicules et événements mis en avant sur mes réseaux sociaux.',
-  },
-]
+/* Petites illustrations SVG (aucune librairie, pas d'emoji). */
+function OfferIcon({ name }) {
+  const common = {
+    width: 28,
+    height: 28,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 1.5,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+  }
+  switch (name) {
+    case 'gift':
+      return (
+        <svg {...common}>
+          <rect x="3" y="8" width="18" height="13" rx="1" />
+          <path d="M3 12h18" />
+          <path d="M12 8v13" />
+          <path d="M7.5 8a2.5 2.5 0 0 1 0-5C9.5 3 12 6 12 8" />
+          <path d="M16.5 8a2.5 2.5 0 0 0 0-5C14.5 3 12 6 12 8" />
+        </svg>
+      )
+    case 'clock':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+      )
+    case 'calendar':
+      return (
+        <svg {...common}>
+          <rect x="3" y="4" width="18" height="17" rx="2" />
+          <path d="M3 9h18M8 2v4M16 2v4" />
+        </svg>
+      )
+    case 'shield':
+      return (
+        <svg {...common}>
+          <path d="M12 3l8 3v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V6z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+      )
+    case 'globe':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18" />
+          <path d="M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18" />
+        </svg>
+      )
+    case 'share':
+      return (
+        <svg {...common}>
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}
+
+/* Les icônes des 6 cartes (fixes) ; les textes viennent des traductions. */
+const ICONS = ['gift', 'clock', 'calendar', 'shield', 'globe', 'share']
 
 export default function Offre() {
+  const { t } = useLang()
   const body = useReveal()
   const cards = useReveal()
   const cta = useReveal()
+  const note = useReveal()
 
   return (
     <section className="pb-28">
       <div className="mx-auto max-w-6xl px-5">
         <PageHeader
-          eyebrow="01 / L'offre"
-          title={<>Une offre de lancement <span className="text-amber">gratuite</span></>}
+          eyebrow={t.offre.eyebrow}
+          title={<>{t.offre.title.a}<span className="text-amber">{t.offre.title.b}</span></>}
         />
 
-        {/* Texte principal, hiérarchisé */}
-        <div ref={body} className="reveal mt-12 grid gap-10 lg:grid-cols-2">
-          <div className="space-y-6 text-lg leading-relaxed text-smoke">
-            <p className="text-chalk text-xl leading-relaxed">
-              Je propose une offre de lancement gratuite en photographie
-              automobile, ouverte aux concessionnaires, propriétaires
-              individuels, pilotes et écuries.
-            </p>
-            <p>
-              L'idée est simple&nbsp;: je viens photographier votre véhicule,
-              votre concession, votre journée de course ou votre événement, et
-              je vous livre des photos retouchées, prêtes à publier, dans un
-              délai de 72&nbsp;h. En plus des fichiers, je vous remets un
-              planning éditorial adapté à la matière que j'ai en mains — vous
-              savez exactement quoi publier, quand, et avec quelle accroche.
-              Pas besoin de vous demander comment exploiter vos photos&nbsp;:
-              c'est inclus.
-            </p>
-          </div>
-          <div className="space-y-6 text-lg leading-relaxed text-smoke">
-            <p>
-              En contrepartie, vos véhicules et événements seront mis en avant
-              sur mes réseaux sociaux. Vous bénéficiez d'une visibilité
-              supplémentaire sans effort de votre côté, et je construis mon
-              portfolio avec du contenu réel et varié.
-            </p>
-            <p>
-              Cette offre de lancement est entièrement gratuite. Elle me permet
-              de développer mon travail dans l'univers automobile tout en vous
-              apportant une valeur concrète dès maintenant.
-            </p>
-            <p className="text-chalk">
-              Si vous êtes intéressé, contactez-moi directement — on échange
-              quelques minutes pour voir si la collaboration fait sens.
-            </p>
-          </div>
+        {/* Accroche mise en valeur + publicité croisée */}
+        <div ref={body} className="reveal mt-12 max-w-3xl space-y-6">
+          <p className="font-display text-2xl font-bold leading-snug text-chalk sm:text-3xl">
+            {t.offre.lead.a}<span className="text-amber">{t.offre.lead.b}</span>.
+          </p>
+          <p className="text-lg leading-relaxed text-smoke">
+            {t.offre.para1}
+          </p>
+          <p className="font-display text-xl font-bold text-chalk">
+            {t.offre.punch}
+          </p>
+          <p className="text-lg leading-relaxed text-smoke">
+            {t.offre.para2}
+          </p>
         </div>
 
-        {/* Points clés */}
-        <div ref={cards} className="reveal mt-16 grid gap-px bg-line sm:grid-cols-3 border border-line">
-          {POINTS.map((p) => (
+        {/* Cartes illustrées : les atouts de l'offre */}
+        <div ref={cards} className="reveal mt-16 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          {t.offre.cards.map((p, i) => (
             <div
-              key={p.title}
+              key={i}
               className="group bg-graphite p-8 transition-colors duration-300 hover:bg-carbon"
             >
-              <p className="font-mono text-xs tracking-[0.25em] uppercase text-amber">{p.tag}</p>
-              <h3 className="mt-3 font-display text-xl font-bold">{p.title}</h3>
+              <span className="text-amber">
+                <OfferIcon name={ICONS[i]} />
+              </span>
+              <p className="mt-4 font-mono text-xs tracking-[0.25em] uppercase text-amber">{p.tag}</p>
+              <h3 className="mt-2 font-display text-xl font-bold">{p.title}</h3>
               <p className="mt-2 text-sm text-smoke">{p.text}</p>
             </div>
           ))}
@@ -91,14 +125,19 @@ export default function Offre() {
           ref={cta}
           className="reveal mt-16 flex flex-col items-center gap-6 border border-amber/30 bg-graphite px-8 py-14 text-center"
         >
-          <p className="eyebrow">Intéressé&nbsp;?</p>
+          <p className="eyebrow">{t.offre.ctaEyebrow}</p>
           <h3 className="font-display font-black uppercase text-2xl sm:text-3xl">
-            Parlons de votre projet
+            {t.offre.ctaTitle}
           </h3>
           <Link to="/contact" className="btn-primary">
-            Me contacter
+            {t.offre.ctaButton}
           </Link>
         </div>
+
+        {/* Note de bas de page (astérisque déplacement) */}
+        <p ref={note} className="reveal mt-10 max-w-3xl font-mono text-xs leading-relaxed text-smoke">
+          {t.offre.note}
+        </p>
       </div>
     </section>
   )

@@ -9,5 +9,5 @@ export default defineConfig({
   // Remplace "portfolio-auto" par le NOM EXACT de ton dépôt GitHub.
   // Si tu déploies sur https://tonpseudo.github.io (dépôt racine),
   // mets base: '/'
-  base: '/portfolio-auto/',
+  base: '/',
 })

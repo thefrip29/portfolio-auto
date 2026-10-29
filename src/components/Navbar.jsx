@@ -1,49 +1,60 @@
 import { useState } from 'react'
 import { NavLink, Link } from 'react-router-dom'
-
-// Les 5 onglets : chacun pointe désormais vers sa propre page (route)
-const LINKS = [
-  { to: '/offre',     label: "L'offre" },
-  { to: '/histoire',  label: 'Mon histoire' },
-  { to: '/materiel',  label: 'Mon matériel' },
-  { to: '/portfolio', label: 'Mon portfolio' },
-  { to: '/contact',   label: 'Contact' },
-]
+import { useLang } from '../i18n.jsx'
+import LangToggle from './LangToggle.jsx'
 
 export default function Navbar() {
+  const { t } = useLang()
   const [open, setOpen] = useState(false) // menu mobile
 
-  // Style des liens : l'onglet actif est souligné d'ambre
-  const linkClass = ({ isActive }) =>
-    `font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-300
-     border-b pb-1
-     ${isActive
-       ? 'text-amber border-amber'
-       : 'text-smoke border-transparent hover:text-amber'}`
+  // Les 5 onglets. Les libellés viennent des traductions.
+  const LINKS = [
+    { to: '/portfolio', label: t.nav.portfolio },
+    { to: '/offre',     label: t.nav.offre },
+    { to: '/histoire',  label: t.nav.histoire },
+    { to: '/materiel',  label: t.nav.materiel },
+    { to: '/contact',   label: t.nav.contact, highlight: true },
+  ]
+
+  /**
+   * Style d'un lien : gris au repos, ambre au survol, souligné ambre si actif.
+   * Le lien "highlight" (Contact) est ambre en permanence.
+   */
+  const linkClass = (highlight) => ({ isActive }) => {
+    const base =
+      'font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-300 border-b pb-1'
+
+    if (highlight) return `${base} text-amber font-bold border-transparent`
+    if (isActive) return `${base} text-amber border-amber`
+    return `${base} text-smoke border-transparent hover:text-amber`
+  }
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-carbon/90 backdrop-blur">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        {/* Logo / marque → retour à l'accueil */}
+        {/* Logo / marque → retour à l'accuei */}
         <Link to="/" className="font-display font-black uppercase tracking-tight text-lg">
-          <span className="text-amber">●</span> VotreNom<span className="text-amber">.</span>
+          Sam Guivarch<span className="text-amber"></span>
         </Link>
 
-        {/* Liens desktop */}
+        {/* Liens desktop + sélecteur de langue */}
         <ul className="hidden md:flex items-center gap-8">
           {LINKS.map((l) => (
             <li key={l.to}>
-              <NavLink to={l.to} className={linkClass}>
+              <NavLink to={l.to} className={linkClass(l.highlight)}>
                 {l.label}
               </NavLink>
             </li>
           ))}
+          <li>
+            <LangToggle />
+          </li>
         </ul>
 
         {/* Bouton burger (mobile) */}
         <button
           className="md:hidden flex flex-col gap-1.5 p-2"
-          aria-label="Ouvrir le menu"
+          aria-label={t.nav.menu}
           aria-expanded={open}
           onClick={() => setOpen(!open)}
         >
@@ -61,11 +72,14 @@ export default function Navbar() {
         <ul className="flex flex-col px-5 py-4 gap-4">
           {LINKS.map((l) => (
             <li key={l.to}>
-              <NavLink to={l.to} onClick={() => setOpen(false)} className={linkClass}>
+              <NavLink to={l.to} onClick={() => setOpen(false)} className={linkClass(l.highlight)}>
                 {l.label}
               </NavLink>
             </li>
           ))}
+          <li className="pt-2">
+            <LangToggle />
+          </li>
         </ul>
       </div>
     </header>

@@ -22,6 +22,10 @@ export default function App() {
   return (
     <LanguageProvider>
       <HashRouter>
+        {/* Halos pastel flous derrière les surfaces en verre */}
+        <div className="ambient" aria-hidden="true">
+          <span /><span /><span />
+        </div>
         <ScrollToTop />
         <Navbar />
         <main className="min-h-screen">

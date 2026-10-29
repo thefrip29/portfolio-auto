@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 import { useLang } from '../i18n.jsx'
 
 /**
- * Hero plein écran de la landing page.
+ * Hero de la landing page : la photo dans un grand cadre arrondi,
+ * la devise posée sur une carte en verre.
  * Photo de fond : place un fichier  src/assets/hero.jpg (ou .jpeg/.png/.webp).
- * Sans fichier, un dégradé sombre s'affiche.
  */
 const heroModules = import.meta.glob('../assets/hero.{jpg,jpeg,png,webp}', {
   eager: true,
@@ -16,33 +16,42 @@ export default function Hero() {
   const { t } = useLang()
 
   return (
-    <section className="relative flex h-screen items-end overflow-hidden">
-      {/* Fond */}
-      {heroSrc ? (
-        <img src={heroSrc} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-graphite via-carbon to-black" />
-      )}
-      {/* Voile sombre général : lisibilité du texte sur la photo */}
-      <div className="absolute inset-0 bg-gradient-to-t from-carbon via-carbon/20 to-transparent" />
-      {/* Fondu vers le noir sur le bas : transition avec la section suivante */}
-      <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-carbon to-transparent" />
-      {/* Halo ambré subtil */}
-      <div className="absolute -bottom- left-1/2 h-80 w-[120%] -translate-x-1/2 rounded-full bg-amber/10 blur-3xl" />
+    <section className="px-3 pt-3 sm:px-5 sm:pt-4">
+      <div className="relative mx-auto flex h-[calc(100svh-1.5rem)] min-h-[560px] items-end overflow-hidden rounded-[2rem] sm:h-[calc(100svh-2rem)] sm:rounded-[2.5rem]">
+        {heroSrc ? (
+          <img src={heroSrc} alt="" fetchpriority="high" className="absolute inset-0 h-full w-full object-cover" />
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-300 to-slate-500" />
+        )}
+        {/* Léger voile en bas pour la lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
 
-      {/* Contenu : la devise en très grand */}
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-5 pb-24 animate-fadeUp">
-        <h1 className="font-display font-black uppercase leading-[0.95] tracking-tight text-5xl sm:text-7xl lg:text-7xl">
-          {t.hero.l1}
-          <br />
-          <span className="text-amber">{t.hero.l2}</span>
-        </h1>
-        <p className="mt-6 max-w-xl text-white text-lg">
-          {t.hero.subtitle}
-        </p>
-        <Link to="/portfolio" className="btn-primary mt-10">
-          {t.hero.cta}
-        </Link>
+        <div className="relative z-10 w-full p-4 sm:p-8 lg:p-10">
+          <div className="glass-dark max-w-2xl animate-fadeUp rounded-[1.75rem] p-6 sm:p-9">
+            <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+              {t.hero.l1}
+              <br />
+              <span className="text-white/70">{t.hero.l2}</span>
+            </h1>
+            <p className="mt-5 max-w-lg text-base text-white/85 sm:text-lg">
+              {t.hero.subtitle}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link
+                to="/portfolio"
+                className="inline-flex items-center rounded-full bg-white px-7 py-3.5 text-sm font-medium text-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
+              >
+                {t.hero.cta}
+              </Link>
+              <Link
+                to="/offre"
+                className="inline-flex items-center rounded-full border border-white/40 px-6 py-3.5 text-sm font-medium text-white transition-colors duration-300 hover:bg-white/15"
+              >
+                {t.teasers.items[1].cta}
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )

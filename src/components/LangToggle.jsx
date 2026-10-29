@@ -1,32 +1,32 @@
 import { useLang } from '../i18n.jsx'
 
 /**
- * Petit sélecteur de langue discret : FR | EN.
- * La langue active est en ambre, l'autre en gris (passe en ambre au survol).
+ * Sélecteur de langue en "segmented control" façon iOS : FR | EN.
  * Le choix est mémorisé (voir LanguageProvider dans i18n.jsx).
  */
 export default function LangToggle({ className = '' }) {
   const { lang, setLang } = useLang()
-  const base = 'font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-300'
+  const base = 'rounded-full px-2.5 py-1 text-xs font-semibold transition-all duration-300'
+  const active = 'bg-white text-ink shadow-sm'
+  const idle = 'text-muted hover:text-ink'
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`inline-flex items-center rounded-full bg-black/5 p-0.5 ${className}`}>
       <button
         type="button"
         onClick={() => setLang('fr')}
         aria-label="Français"
         aria-pressed={lang === 'fr'}
-        className={`${base} ${lang === 'fr' ? 'text-amber' : 'text-smoke hover:text-amber'}`}
+        className={`${base} ${lang === 'fr' ? active : idle}`}
       >
         FR
       </button>
-      <span className="text-line">|</span>
       <button
         type="button"
         onClick={() => setLang('en')}
         aria-label="English"
         aria-pressed={lang === 'en'}
-        className={`${base} ${lang === 'en' ? 'text-amber' : 'text-smoke hover:text-amber'}`}
+        className={`${base} ${lang === 'en' ? active : idle}`}
       >
         EN
       </button>

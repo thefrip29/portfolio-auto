@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
    TRADUCTIONS DU SITE (FR / EN)
    Tout le texte visible du site vit ici. Pour modifier un mot,
    change-le dans fr (français) et en (anglais).
-   Les titres avec un mot en ambre sont découpés en { a, b } :
+   Les titres en deux tons sont découpés en { a, b } :
    a = texte normal, b = mot affiché en ambre.
    ────────────────────────────────────────────────────────────── */
 export const T = {
@@ -119,11 +119,11 @@ export const T = {
       intro: `Du matériel de pointe, choisi pour chaque situation : concession, circuit, nuit.`,
       placeholder: `Image produit`,
       gear: [
-        { name: `Boîtier - Sony a6500`, desc: `Compact et réactif : 24 Mpx, stabilisation 5 axes, parfait en bord de piste.` },
-        { name: `Objectif - Sigma 100-400mm f/5-6.3`, desc: `Le téléobjectif de référence pour les filés en bord de piste.` },
-        { name: `Objectif - Sigma 18-50mm f/2.8`, desc: `Compact et lumineux, parfait du grand-angle au portrait de carrosserie.` },
-        { name: `Stabilisateur - Dji Ronin SC`, desc: `Stabilise la camera pour des mouvements fluide.` },
-        { name: `Filtre - K&F concept 3 en 1`, desc: `Supprime les reflets sur les carrosseries et les vitres.` },
+        { img: 'boitier', name: `Boîtier - Sony a6500`, desc: `Compact et réactif : 24 Mpx, stabilisation 5 axes, parfait en bord de piste.` },
+        { img: '100-400', name: `Objectif - Sigma 100-400mm f/5-6.3`, desc: `Le téléobjectif de référence pour les filés en bord de piste.` },
+        { img: '18-50', name: `Objectif - Sigma 18-50mm f/2.8`, desc: `Compact et lumineux, parfait du grand-angle au portrait de carrosserie.` },
+        { img: 'ronin', name: `Stabilisateur - DJI Ronin-SC`, desc: `Stabilise la caméra pour des mouvements fluides.` },
+        { img: '3in1', name: `Filtre - K&F Concept 3 en 1`, desc: `Supprime les reflets sur les carrosseries et les vitres.` },
       ],
     },
     contact: {
@@ -195,7 +195,7 @@ export const T = {
     portfolio: {
       eyebrow: `01 / Portfolio`,
       title: { a: `One gallery, `, b: `one vision.` },
-      intro: `My work, pictures after pictures.`,
+      intro: `My work, picture after picture.`,
       emptyTitle: `No photos yet`,
       emptyTextA: `Add your images to `,
       emptyTextB: ` — they'll appear here automatically.`,
@@ -229,7 +229,7 @@ export const T = {
           eyebrow: `Today`,
           title: ``,
           paras: [
-            `My name is Samuel Guivarch, I'm 22 and I'am an engineering student from Arts et Métiers. But above all, I'm passionate about photography and cars.`,
+            `My name is Samuel Guivarch, I'm 22 and I'm an engineering student at Arts et Métiers. But above all, I'm passionate about photography and cars.`,
             `I live motorsport intensely: many 24 Hours of Le Mans under my belt, a Formula 1 Grand Prix at Spa-Francorchamps, and a constant urge to be as close as possible to the machines that fascinate me.`,
             `Today, I bring these two passions together to put my lens at the service of cars and the people who keep them alive.`,
           ],
@@ -258,10 +258,11 @@ export const T = {
       intro: `High-end equipment, chosen for every situation: dealership, circuit, night.`,
       placeholder: `Product image`,
       gear: [
-        { name: `Body - Sony a6500`, desc: `Compact and responsive: 24 MP, 5-axis stabilization, perfect trackside.` },
-        { name: `Lens - Sigma 100-400mm f/5-6.3`, desc: `The go-to telephoto for rolling shots trackside.` },
-        { name: `Lens - Sigma 18-50mm f/2.8`, desc: `Compact and bright, perfect from wide angle to bodywork portrait.` },
-        { name: `Filter - K&F Concept 3-in-1`, desc: `Removes reflections on bodywork and glass.` },
+        { img: 'boitier', name: `Body - Sony a6500`, desc: `Compact and responsive: 24 MP, 5-axis stabilization, perfect trackside.` },
+        { img: '100-400', name: `Lens - Sigma 100-400mm f/5-6.3`, desc: `The go-to telephoto for rolling shots trackside.` },
+        { img: '18-50', name: `Lens - Sigma 18-50mm f/2.8`, desc: `Compact and bright, perfect from wide angle to bodywork portrait.` },
+        { img: 'ronin', name: `Gimbal - DJI Ronin-SC`, desc: `Stabilizes the camera for smooth, fluid motion.` },
+        { img: '3in1', name: `Filter - K&F Concept 3-in-1`, desc: `Removes reflections on bodywork and glass.` },
       ],
     },
     contact: {

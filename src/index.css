@@ -8,8 +8,32 @@ html {
 }
 
 body {
-  @apply bg-carbon text-chalk font-body antialiased;
+  @apply bg-canvas text-ink font-sans antialiased;
+  font-feature-settings: 'ss01', 'cv11';
 }
+
+::selection {
+  @apply bg-accent/20;
+}
+
+/* Fond d'ambiance : halos pastel flous derrière le verre.
+   Sans eux, l'effet "glass" n'aurait rien à flouter. */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ambient span {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.75;
+}
+.ambient span:nth-child(1) { width: 46vw; height: 46vw; top: -12vw; left: -10vw; background: #D9E4F5; }
+.ambient span:nth-child(2) { width: 40vw; height: 40vw; top: 30vh; right: -12vw; background: #E8E3F3; }
+.ambient span:nth-child(3) { width: 38vw; height: 38vw; bottom: -14vw; left: 22vw; background: #F3ECE3; }
 
 /* Respect de la préférence "réduire les animations" */
 @media (prefers-reduced-motion: reduce) {
@@ -22,31 +46,64 @@ body {
 
 /* ── Composants réutilisables ─────────────────────────────────── */
 @layer components {
-  /* Étiquette "télémétrie" au-dessus des titres de section */
+  /* Surface en verre dépoli (façon iOS) */
+  .glass {
+    @apply border border-white/70 bg-white/55 shadow-glass backdrop-blur-2xl backdrop-saturate-150;
+  }
+  /* Variante plus opaque pour les éléments flottants (menu, lightbox) */
+  .glass-strong {
+    @apply border border-white/80 bg-white/75 shadow-lift backdrop-blur-2xl backdrop-saturate-150;
+  }
+  /* Verre sombre, posé sur une photo */
+  .glass-dark {
+    @apply border border-white/25 bg-white/15 text-white backdrop-blur-xl backdrop-saturate-150;
+  }
+
+  /* Petite étiquette au-dessus des titres de section */
   .eyebrow {
-    @apply font-mono text-xs tracking-[0.3em] uppercase text-amber;
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-accent;
   }
 
   /* Titre de section */
   .section-title {
-    @apply font-display font-black uppercase tracking-tight text-3xl sm:text-4xl lg:text-5xl;
+    @apply text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl;
   }
 
-  /* Bouton principal */
+  /* Bouton principal : pilule pleine */
   .btn-primary {
-    @apply inline-block bg-amber text-carbon font-mono text-sm tracking-widest uppercase
-           px-8 py-4 transition-all duration-300
-           hover:bg-chalk hover:-translate-y-0.5
-           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber;
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-7 py-3.5
+           text-sm font-medium text-white shadow-[0_6px_20px_rgba(29,29,31,0.18)]
+           transition-all duration-300 hover:-translate-y-0.5 hover:bg-black
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent;
   }
 
-  /* Bouton secondaire (contour) */
+  /* Bouton secondaire : pilule en verre */
   .btn-ghost {
-    @apply inline-block border border-line text-chalk font-mono text-sm tracking-widest uppercase
-           px-6 py-3 transition-all duration-300
-           hover:border-amber hover:text-amber
-           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber;
+    @apply glass inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+           text-sm font-medium text-ink transition-all duration-300
+           hover:-translate-y-0.5 hover:bg-white/80
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent;
   }
+}
+
+/* Navigateurs sans backdrop-filter, ou utilisateurs qui demandent moins de transparence */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass, .glass-strong { background-color: rgba(255, 255, 255, 0.92); }
+  .glass-dark { background-color: rgba(29, 29, 31, 0.6); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass, .glass-strong { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: none; }
+  .glass-dark { background-color: rgba(29, 29, 31, 0.7); backdrop-filter: none; }
+}
+
+/* Galerie : coins arrondis sur les photos */
+.react-photo-album--photo {
+  border-radius: 14px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.react-photo-album--photo:hover {
+  transform: scale(1.015);
+  box-shadow: 0 16px 40px rgba(30, 40, 70, 0.18);
 }
 
 /* Effet d'apparition au scroll (piloté par le hook useReveal) */

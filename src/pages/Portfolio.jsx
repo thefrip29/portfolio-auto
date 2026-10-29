@@ -25,7 +25,7 @@ function shootNumber(name) {
 
 const PHOTOS = Object.entries(photoModules).map(([path, url]) => {
   const name = path.split('/').pop()
-  return { src: url, name, shoot: shootNumber(name) }
+  return { src: url, name, shoot: shootNumber(name), alt: 'Photographie automobile — Sam Guivarch' }
 })
 
 /* ── Couleur dominante (déco lightbox + tri interne) ───────────── */
@@ -74,10 +74,10 @@ function Skeleton({ label }) {
   const widths = ['w-72', 'w-56', 'w-80', 'w-64', 'w-72', 'w-56', 'w-80']
   return (
     <div className="space-y-6">
-      <p className="font-mono text-sm tracking-widest text-smoke">{label}</p>
+      <p className="text-sm text-muted">{label}</p>
       <div className="flex flex-wrap gap-2">
         {widths.map((w, i) => (
-          <div key={i} className={`h-56 ${w} animate-pulseSoft border border-line bg-graphite`} />
+          <div key={i} className={`h-56 ${w} animate-pulseSoft rounded-2xl bg-white/60`} />
         ))}
       </div>
     </div>
@@ -135,18 +135,18 @@ export default function Portfolio() {
       <div className="mx-auto max-w-6xl px-5">
         <PageHeader
           eyebrow={t.portfolio.eyebrow}
-          title={<>{t.portfolio.title.a}<span className="text-amber">{t.portfolio.title.b}</span></>}
+          title={<>{t.portfolio.title.a}<span className="text-muted">{t.portfolio.title.b}</span></>}
           intro={t.portfolio.intro}
         />
 
         <div className="mt-12">
           {PHOTOS.length === 0 ? (
-            <div className="border border-dashed border-line p-16 text-center">
-              <p className="font-mono text-sm tracking-widest uppercase text-smoke">
+            <div className="glass rounded-3xl p-16 text-center">
+              <p className="text-sm font-semibold text-ink">
                 {t.portfolio.emptyTitle}
               </p>
-              <p className="mt-3 text-smoke">
-                {t.portfolio.emptyTextA}<code className="text-amber">src/assets/photos/</code>{t.portfolio.emptyTextB}
+              <p className="mt-3 text-muted">
+                {t.portfolio.emptyTextA}<code className="text-accent">src/assets/photos/</code>{t.portfolio.emptyTextB}
               </p>
             </div>
           ) : loading ? (
@@ -156,7 +156,7 @@ export default function Portfolio() {
               photos={photos}
               targetRowHeight={rowHeight}
               rowConstraints={rowConstraints}
-              spacing={8}
+              spacing={10}
               render={{
                 image: (props) => (
                   <img {...props} loading="lazy" decoding="async" alt={props.alt || ''} />

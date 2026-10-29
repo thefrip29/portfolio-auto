@@ -7,77 +7,78 @@ export default function Navbar() {
   const { t } = useLang()
   const [open, setOpen] = useState(false) // menu mobile
 
-  // Les 5 onglets. Les libellés viennent des traductions.
+  // Les onglets. Les libellés viennent des traductions.
   const LINKS = [
     { to: '/portfolio', label: t.nav.portfolio },
     { to: '/offre',     label: t.nav.offre },
     { to: '/histoire',  label: t.nav.histoire },
     { to: '/materiel',  label: t.nav.materiel },
-    { to: '/contact',   label: t.nav.contact, highlight: true },
   ]
 
-  /**
-   * Style d'un lien : gris au repos, ambre au survol, souligné ambre si actif.
-   * Le lien "highlight" (Contact) est ambre en permanence.
-   */
-  const linkClass = (highlight) => ({ isActive }) => {
-    const base =
-      'font-mono text-xs tracking-[0.2em] uppercase transition-colors duration-300 border-b pb-1'
-
-    if (highlight) return `${base} text-amber font-bold border-transparent`
-    if (isActive) return `${base} text-amber border-amber`
-    return `${base} text-smoke border-transparent hover:text-amber`
-  }
+  /* Lien actif : petite pilule blanche, comme un onglet iOS. */
+  const linkClass = ({ isActive }) =>
+    `rounded-full px-4 py-2 text-sm font-medium transition-all duration-300 ${
+      isActive ? 'bg-white text-ink shadow-sm' : 'text-muted hover:text-ink'
+    }`
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-line bg-carbon/90 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        {/* Logo / marque → retour à l'accuei */}
-        <Link to="/" className="font-display font-black uppercase tracking-tight text-lg">
-          Sam Guivarch<span className="text-amber"></span>
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-4">
+      {/* Barre flottante en verre */}
+      <nav className="glass mx-auto flex max-w-6xl items-center justify-between rounded-full py-2 pl-5 pr-2">
+        <Link to="/" onClick={() => setOpen(false)} className="text-[15px] font-semibold tracking-tight">
+          Sam Guivarch
         </Link>
 
-        {/* Liens desktop + sélecteur de langue */}
-        <ul className="hidden md:flex items-center gap-8">
+        {/* Liens desktop */}
+        <ul className="hidden items-center gap-1 md:flex">
           {LINKS.map((l) => (
             <li key={l.to}>
-              <NavLink to={l.to} className={linkClass(l.highlight)}>
-                {l.label}
-              </NavLink>
+              <NavLink to={l.to} className={linkClass}>{l.label}</NavLink>
             </li>
           ))}
-          <li>
-            <LangToggle />
-          </li>
         </ul>
+
+        <div className="hidden items-center gap-3 md:flex">
+          <LangToggle />
+          <Link to="/contact" className="rounded-full bg-ink px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-black">
+            {t.nav.contact}
+          </Link>
+        </div>
 
         {/* Bouton burger (mobile) */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full md:hidden"
           aria-label={t.nav.menu}
           aria-expanded={open}
           onClick={() => setOpen(!open)}
         >
-          <span className={`block h-px w-6 bg-chalk transition-transform duration-300 ${open ? 'translate-y-[7px] rotate-45' : ''}`} />
-          <span className={`block h-px w-6 bg-chalk transition-opacity duration-300 ${open ? 'opacity-0' : ''}`} />
-          <span className={`block h-px w-6 bg-chalk transition-transform duration-300 ${open ? '-translate-y-[6px] -rotate-45' : ''}`} />
+          <span className={`block h-[1.5px] w-5 rounded bg-ink transition-transform duration-300 ${open ? 'translate-y-[3.75px] rotate-45' : ''}`} />
+          <span className={`block h-[1.5px] w-5 rounded bg-ink transition-transform duration-300 ${open ? '-translate-y-[3.75px] -rotate-45' : ''}`} />
         </button>
       </nav>
 
-      {/* Menu mobile déroulant */}
+      {/* Menu mobile : carte en verre qui se déplie */}
       <div
-        className={`md:hidden overflow-hidden bg-carbon/95 backdrop-blur transition-[max-height] duration-500
-          ${open ? 'max-h-96 border-b border-line' : 'max-h-0'}`}
+        className={`glass-strong mx-auto mt-2 max-w-6xl overflow-hidden rounded-3xl transition-all duration-500 md:hidden
+          ${open ? 'max-h-[30rem] opacity-100' : 'pointer-events-none max-h-0 opacity-0'}`}
       >
-        <ul className="flex flex-col px-5 py-4 gap-4">
-          {LINKS.map((l) => (
+        <ul className="flex flex-col gap-1 p-3">
+          {[...LINKS, { to: '/contact', label: t.nav.contact }].map((l) => (
             <li key={l.to}>
-              <NavLink to={l.to} onClick={() => setOpen(false)} className={linkClass(l.highlight)}>
+              <NavLink
+                to={l.to}
+                onClick={() => setOpen(false)}
+                className={({ isActive }) =>
+                  `block rounded-2xl px-4 py-3 text-base font-medium transition-colors ${
+                    isActive ? 'bg-white text-ink shadow-sm' : 'text-ink/80 hover:bg-white/60'
+                  }`
+                }
+              >
                 {l.label}
               </NavLink>
             </li>
           ))}
-          <li className="pt-2">
+          <li className="px-4 pb-1 pt-3">
             <LangToggle />
           </li>
         </ul>

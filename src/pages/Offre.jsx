@@ -6,12 +6,12 @@ import { useLang } from '../i18n.jsx'
 /* Petites illustrations SVG (aucune librairie, pas d'emoji). */
 function OfferIcon({ name }) {
   const common = {
-    width: 28,
-    height: 28,
+    width: 24,
+    height: 24,
     viewBox: '0 0 24 24',
     fill: 'none',
     stroke: 'currentColor',
-    strokeWidth: 1.5,
+    strokeWidth: 1.6,
     strokeLinecap: 'round',
     strokeLinejoin: 'round',
   }
@@ -84,38 +84,38 @@ export default function Offre() {
       <div className="mx-auto max-w-6xl px-5">
         <PageHeader
           eyebrow={t.offre.eyebrow}
-          title={<>{t.offre.title.a}<span className="text-amber">{t.offre.title.b}</span></>}
+          title={<>{t.offre.title.a}<span className="text-muted">{t.offre.title.b}</span></>}
         />
 
         {/* Accroche mise en valeur + publicité croisée */}
         <div ref={body} className="reveal mt-12 max-w-3xl space-y-6">
-          <p className="font-display text-2xl font-bold leading-snug text-chalk sm:text-3xl">
-            {t.offre.lead.a}<span className="text-amber">{t.offre.lead.b}</span>.
+          <p className="text-2xl font-semibold leading-snug tracking-tight text-ink sm:text-3xl">
+            {t.offre.lead.a}<span className="text-accent">{t.offre.lead.b}</span>.
           </p>
-          <p className="text-lg leading-relaxed text-smoke">
+          <p className="text-lg leading-relaxed text-muted">
             {t.offre.para1}
           </p>
-          <p className="font-display text-xl font-bold text-chalk">
+          <p className="text-xl font-semibold tracking-tight text-ink">
             {t.offre.punch}
           </p>
-          <p className="text-lg leading-relaxed text-smoke">
+          <p className="text-lg leading-relaxed text-muted">
             {t.offre.para2}
           </p>
         </div>
 
         {/* Cartes illustrées : les atouts de l'offre */}
-        <div ref={cards} className="reveal mt-16 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+        <div ref={cards} className="reveal mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {t.offre.cards.map((p, i) => (
             <div
               key={i}
-              className="group bg-graphite p-8 transition-colors duration-300 hover:bg-carbon"
+              className="glass group rounded-[1.75rem] p-7 transition-all duration-500 hover:-translate-y-1 hover:bg-white/75 hover:shadow-lift"
             >
-              <span className="text-amber">
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-accent shadow-sm">
                 <OfferIcon name={ICONS[i]} />
               </span>
-              <p className="mt-4 font-mono text-xs tracking-[0.25em] uppercase text-amber">{p.tag}</p>
-              <h3 className="mt-2 font-display text-xl font-bold">{p.title}</h3>
-              <p className="mt-2 text-sm text-smoke">{p.text}</p>
+              <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-accent">{p.tag}</p>
+              <h3 className="mt-2 text-xl font-semibold tracking-tight">{p.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">{p.text}</p>
             </div>
           ))}
         </div>
@@ -123,10 +123,10 @@ export default function Offre() {
         {/* Bloc CTA final → page Contact */}
         <div
           ref={cta}
-          className="reveal mt-16 flex flex-col items-center gap-6 border border-amber/30 bg-graphite px-8 py-14 text-center"
+          className="reveal glass-strong mt-16 flex flex-col items-center gap-5 rounded-[2rem] px-8 py-14 text-center"
         >
           <p className="eyebrow">{t.offre.ctaEyebrow}</p>
-          <h3 className="font-display font-black uppercase text-2xl sm:text-3xl">
+          <h3 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             {t.offre.ctaTitle}
           </h3>
           <Link to="/contact" className="btn-primary">
@@ -135,7 +135,7 @@ export default function Offre() {
         </div>
 
         {/* Note de bas de page (astérisque déplacement) */}
-        <p ref={note} className="reveal mt-10 max-w-3xl font-mono text-xs leading-relaxed text-smoke">
+        <p ref={note} className="reveal mt-10 max-w-3xl text-xs leading-relaxed text-muted">
           {t.offre.note}
         </p>
       </div>

@@ -78,11 +78,11 @@ export default function Contact() {
   }
 
   const inputClass =
-    'w-full border border-line bg-graphite px-4 py-3 text-chalk placeholder-smoke/60 ' +
-    'transition-colors duration-300 focus:border-amber focus:outline-none'
+    'w-full rounded-2xl border border-black/5 bg-white/70 px-4 py-3 text-ink placeholder-muted/60 shadow-sm ' +
+    'transition-all duration-300 focus:border-accent/40 focus:bg-white focus:outline-none focus:ring-4 focus:ring-accent/15'
 
   const labelClass =
-    'mb-2 block font-mono text-xs tracking-widest uppercase text-smoke'
+    'mb-2 block pl-1 text-sm font-medium text-ink/80'
 
   const c = t.contact
 
@@ -91,12 +91,12 @@ export default function Contact() {
       <div className="mx-auto max-w-6xl px-5">
         <PageHeader
           eyebrow={c.eyebrow}
-          title={<>{c.title.a}<span className="text-amber">{c.title.b}</span></>}
+          title={<>{c.title.a}<span className="text-muted">{c.title.b}</span></>}
         />
 
-        <div ref={ref} className="reveal mt-12 grid gap-14 lg:grid-cols-[2fr_1fr]">
+        <div ref={ref} className="reveal mt-12 grid gap-6 lg:grid-cols-[2fr_1fr]">
           {/* Formulaire */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="glass space-y-5 rounded-[2rem] p-6 sm:p-9">
             {/* Sujet du mail reçu (champ caché lu par Formspree) */}
             <input type="hidden" name="_subject" value="Nouveau message — Portfolio" />
 
@@ -161,35 +161,35 @@ export default function Contact() {
             </button>
 
             {status === 'sent' && (
-              <p className="text-sm text-amber">{c.sentMsg}</p>
+              <p className="text-sm font-medium text-accent">{c.sentMsg}</p>
             )}
             {status === 'error' && (
-              <p className="text-sm text-smoke">{c.errorMsg}</p>
+              <p className="text-sm text-muted">{c.errorMsg}</p>
             )}
           </form>
 
           {/* Réseaux sociaux : cartes cliquables */}
-          <aside>
-            <h3 className="font-display font-bold text-lg">{c.findMe}</h3>
-            <div className="mt-6 space-y-4">
+          <aside className="glass h-fit rounded-[2rem] p-6 sm:p-7">
+            <h3 className="text-lg font-semibold tracking-tight">{c.findMe}</h3>
+            <div className="mt-5 space-y-3">
               {SOCIALS.map((s) => (
                 <a
                   key={s.label}
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-4 border border-line bg-graphite p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-amber/60"
+                  className="group flex items-center gap-4 rounded-2xl bg-white/70 p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white"
                 >
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center border border-line text-chalk transition-colors group-hover:border-amber group-hover:text-amber">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ink text-white">
                     <SocialIcon name={s.icon} />
                   </span>
                   <span className="flex flex-col">
-                    <span className="font-display font-bold">{s.label}</span>
-                    <span className="font-mono text-xs text-smoke transition-colors group-hover:text-amber">
+                    <span className="font-semibold">{s.label}</span>
+                    <span className="text-sm text-muted">
                       {s.handle}
                     </span>
                   </span>
-                  <span className="ml-auto font-mono text-smoke transition-all duration-300 group-hover:translate-x-1 group-hover:text-amber">
+                  <span className="ml-auto pr-2 text-muted transition-all duration-300 group-hover:translate-x-1 group-hover:text-ink">
                     →
                   </span>
                 </a>

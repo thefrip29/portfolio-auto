@@ -10,36 +10,26 @@ const META = [
   { num: '04', to: '/materiel' },
 ]
 
-/* Un bloc teaser, alterné selon sa position (pair/impair) */
-function Teaser({ num, to, title, synopsis, cta, flip }) {
+/* Une carte teaser en verre, entièrement cliquable */
+function Teaser({ num, to, title, synopsis, cta }) {
   const ref = useReveal()
 
   return (
-    <article
+    <Link
       ref={ref}
-      className={`reveal group grid items-center gap-8 border-t border-line py-14
-        md:grid-cols-[1fr_2fr] ${flip ? 'md:[direction:rtl]' : ''}`}
+      to={to}
+      className="reveal glass group flex flex-col rounded-[1.75rem] p-7 transition-all duration-500 hover:-translate-y-1 hover:bg-white/75 hover:shadow-lift sm:p-9"
     >
-      {/* Grand numéro "télémétrie" */}
-      <div className="md:[direction:ltr]">
-        <p className="font-mono text-6xl sm:text-7xl text-line transition-colors duration-500 group-hover:text-amber/40">
-          {num}
-        </p>
-      </div>
-
-      {/* Synopsis + bouton */}
-      <div className="md:[direction:ltr]">
-        <h2 className="font-display font-black uppercase tracking-tight text-3xl sm:text-4xl">
-          {title}
-        </h2>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-smoke">
-          {synopsis}
-        </p>
-        <Link to={to} className="btn-ghost mt-7">
-          {cta} →
-        </Link>
-      </div>
-    </article>
+      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-sm font-semibold text-accent shadow-sm">
+        {num}
+      </span>
+      <h2 className="mt-6 text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
+      <p className="mt-3 flex-1 leading-relaxed text-muted">{synopsis}</p>
+      <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+        {cta}
+        <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+      </span>
+    </Link>
   )
 }
 
@@ -50,24 +40,25 @@ export default function Teasers() {
   return (
     <section className="py-24">
       <div className="mx-auto max-w-6xl px-5">
-        <div ref={head} className="reveal mb-14">
+        <div ref={head} className="reveal mb-12">
           <p className="eyebrow mb-3">{t.teasers.eyebrow}</p>
           <h2 className="section-title">
-            {t.teasers.title.a}<span className="text-amber">{t.teasers.title.b}</span>
+            {t.teasers.title.a}<span className="text-muted">{t.teasers.title.b}</span>
           </h2>
         </div>
 
-        {t.teasers.items.map((item, i) => (
-          <Teaser
-            key={META[i].to}
-            num={META[i].num}
-            to={META[i].to}
-            title={item.title}
-            synopsis={item.synopsis}
-            cta={item.cta}
-            flip={i % 2 === 1}
-          />
-        ))}
+        <div className="grid gap-5 md:grid-cols-2">
+          {t.teasers.items.map((item, i) => (
+            <Teaser
+              key={META[i].to}
+              num={META[i].num}
+              to={META[i].to}
+              title={item.title}
+              synopsis={item.synopsis}
+              cta={item.cta}
+            />
+          ))}
+        </div>
       </div>
     </section>
   )

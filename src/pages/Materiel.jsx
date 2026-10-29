@@ -5,7 +5,8 @@ import { useLang } from '../i18n.jsx'
 /* ──────────────────────────────────────────────────────────────
    IMPORT AUTOMATIQUE DES PHOTOS PRODUIT
    Dépose les visuels dans  src/assets/materiel/  (jpg, jpeg, png, webp).
-   Relie une photo à une carte via le champ "img" (nom de fichier sans extension).
+   Relie une photo à une carte via le champ "img" de chaque élément
+   de t.materiel.gear (nom de fichier sans extension), dans i18n.jsx.
    ────────────────────────────────────────────────────────────── */
 const gearImages = import.meta.glob(
   '../assets/materiel/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}',
@@ -20,15 +21,6 @@ function imageFor(key) {
   return found ? found[1] : null
 }
 
-/* Prix et image sont fixes ; nom et description viennent des traductions. */
-const META = [
-  {img: 'boitier' },
-  {img: '100-400' },
-  {img: '18-50' },
-  {img: '3in1' },
-  {img: 'ronin' },
-]
-
 export default function Materiel() {
   const { t } = useLang()
   const grid = useReveal()
@@ -38,43 +30,36 @@ export default function Materiel() {
       <div className="mx-auto max-w-6xl px-5">
         <PageHeader
           eyebrow={t.materiel.eyebrow}
-          title={<>{t.materiel.title.a}<span className="text-amber">{t.materiel.title.b}</span></>}
+          title={<>{t.materiel.title.a}<span className="text-muted">{t.materiel.title.b}</span></>}
           intro={t.materiel.intro}
         />
 
-        <div ref={grid} className="reveal mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {t.materiel.gear.map((item, i) => {
-            const image = imageFor(META[i].img)
+        <div ref={grid} className="reveal mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {t.materiel.gear.map((item) => {
+            const image = imageFor(item.img)
             return (
               <article
-                key={META[i].img}
-                className="group flex flex-col border border-line bg-graphite transition-all duration-300 hover:-translate-y-1 hover:border-amber/50"
+                key={item.img}
+                className="glass group flex flex-col overflow-hidden rounded-[1.75rem] p-3 transition-all duration-500 hover:-translate-y-1 hover:bg-white/75 hover:shadow-lift"
               >
-                <div className="aspect-[4/3] overflow-hidden bg-carbon">
+                <div className="aspect-[4/3] overflow-hidden rounded-[1.25rem] bg-white">
                   {image ? (
                     <img
                       src={image}
                       alt={item.name}
                       loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="h-full w-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center">
-                      <span className="font-mono text-xs tracking-widest uppercase text-smoke">
-                        {t.materiel.placeholder}
-                      </span>
+                      <span className="text-sm text-muted">{t.materiel.placeholder}</span>
                     </div>
                   )}
                 </div>
 
-                <div className="flex flex-1 flex-col p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <h3 className="font-display font-bold text-lg">{item.name}</h3>
-                    <span className="shrink-0 font-mono text-sm font-bold text-amber">
-                      {META[i].price}
-                    </span>
-                  </div>
-                  <p className="mt-2 flex-1 text-sm text-smoke">{item.desc}</p>
+                <div className="flex flex-1 flex-col px-4 pb-4 pt-5">
+                  <h3 className="text-lg font-semibold tracking-tight">{item.name}</h3>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">{item.desc}</p>
                 </div>
               </article>
             )

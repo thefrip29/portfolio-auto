@@ -27,7 +27,7 @@ const META = [
   { imgKey: 'photo', alt: 'Samuel adolescent, son premier appareil en main', reverse: false },
 ]
 
-/* Bloc éditorial : photo d'un côté, texte de l'autre.
+/* Bloc éditorial : photo d'un côté, carte de texte en verre de l'autre.
    "reverse" inverse le sens sur grand écran pour rythmer la page.
    Le titre n'est affiché que s'il existe (le 1er bloc n'en a pas). */
 function StoryBlock({ eyebrow, title, imgKey, alt, reverse, paras }) {
@@ -36,35 +36,32 @@ function StoryBlock({ eyebrow, title, imgKey, alt, reverse, paras }) {
   return (
     <div
       ref={ref}
-      className={`reveal flex flex-col gap-10 lg:flex-row lg:items-center ${reverse ? 'lg:flex-row-reverse' : ''}`}
+      className={`reveal flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12 ${reverse ? 'lg:flex-row-reverse' : ''}`}
     >
       {/* Photo */}
       <div className="lg:w-1/2">
-        <div className="relative">
-          {src ? (
-            <img src={src} alt={alt} loading="lazy" className="w-full border border-line object-cover" />
-          ) : (
-            <div className="flex aspect-[4/3] items-center justify-center border border-dashed border-line bg-graphite">
-              <span className="px-4 text-center font-mono text-xs tracking-widest uppercase text-smoke">
-                Photo — src/assets/histoire/{imgKey}.jpg
-              </span>
-            </div>
-          )}
-          <div className="pointer-events-none absolute inset-0 translate-x-3 translate-y-3 border border-amber/30" />
-        </div>
+        {src ? (
+          <img src={src} alt={alt} loading="lazy" className="w-full rounded-[1.75rem] object-cover shadow-lift" />
+        ) : (
+          <div className="glass flex aspect-[4/3] items-center justify-center rounded-[1.75rem]">
+            <span className="px-4 text-center text-sm text-muted">
+              Photo — src/assets/histoire/{imgKey}.jpg
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Texte */}
-      <div className="lg:w-1/2">
+      <div className="glass rounded-[1.75rem] p-7 sm:p-9 lg:w-1/2">
         <p className="eyebrow mb-3">{eyebrow}</p>
         {title && (
-          <h2 className="font-display font-black uppercase tracking-tight text-2xl sm:text-3xl">
+          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             {title}
           </h2>
         )}
-        <div className="mt-5 space-y-4 text-lg leading-relaxed text-smoke">
+        <div className="mt-4 space-y-4 text-lg leading-relaxed text-muted">
           {paras.map((p, i) => (
-            <p key={i} className={i === 0 && !title ? 'text-chalk' : ''}>{p}</p>
+            <p key={i} className={i === 0 && !title ? 'text-ink' : ''}>{p}</p>
           ))}
         </div>
       </div>
@@ -80,10 +77,10 @@ export default function Histoire() {
       <div className="mx-auto max-w-6xl px-5">
         <PageHeader
           eyebrow={t.histoire.eyebrow}
-          title={<>{t.histoire.title.a}<span className="text-amber">{t.histoire.title.b}</span></>}
+          title={<>{t.histoire.title.a}<span className="text-muted">{t.histoire.title.b}</span></>}
         />
 
-        <div className="mt-12 space-y-20 lg:space-y-28">
+        <div className="mt-12 space-y-16 lg:space-y-24">
           {t.histoire.blocks.map((b, i) => (
             <StoryBlock
               key={i}
